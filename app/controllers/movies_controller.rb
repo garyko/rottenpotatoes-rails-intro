@@ -11,8 +11,20 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    if params[:order_by_title]
+      @movies = Movie.all.order(:title)
+      @order_by_title = true
+    elsif params[:order_by_release_date]
+      @movies = Movie.all.order(:release_date)
+      @order_by_release_date = true
+    else
+      @movies = Movie.all
+    end
   end
+
+  # def title_ordered
+  #   redirect_to movies_path(title_ordered: true)
+  # end
 
   def new
     # default: render 'new' template
