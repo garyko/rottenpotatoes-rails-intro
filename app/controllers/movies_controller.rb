@@ -11,15 +11,26 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:order_by_title]
+
+    @para = Hash.new
+    @para[:all_ratings] = %w[G PG PG-13 R]
+    @para[:selected_ratings] = []
+
+    @para[:order_by] = params[:order_by]
+    if params[:order_by] == "title"
       @movies = Movie.all.order(:title)
-      @order_by_title = true
-    elsif params[:order_by_release_date]
+    elsif params[:order_by] == "release_date"
       @movies = Movie.all.order(:release_date)
-      @order_by_release_date = true
     else
       @movies = Movie.all
     end
+
+    if params[:commit] == "Refresh"
+      @para[:all_ratings].each {|r| @para[:selected_ratings] << r if params[:ratings][r]}
+
+      @movies = Movie.ratings_include(@para[:selected_ratings]) unless @para[:selected_ratings].empty?
+    end
+
   end
 
   # def title_ordered
