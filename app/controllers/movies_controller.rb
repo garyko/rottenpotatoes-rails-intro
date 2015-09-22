@@ -29,7 +29,8 @@ class MoviesController < ApplicationController
 
     if redirect
       flash.keep
-      redirect_to movies_path(params)
+      new_params = Hash[:order_by => params[:order_by], :commit => params[:commit], :ratings => params[:ratings]]
+      redirect_to movies_path(new_params)
 
     else
       session[:commit] = params[:commit]
