@@ -12,25 +12,53 @@ class MoviesController < ApplicationController
 
   def index
 
-    @para = Hash.new
-    @para[:all_ratings] = %w[G PG PG-13 R]
-    @para[:selected_ratings] = []
+    redirect = false
 
-    @para[:order_by] = params[:order_by]
-    if params[:order_by] == "title"
-      @movies = Movie.all.order(:title)
-    elsif params[:order_by] == "release_date"
-      @movies = Movie.all.order(:release_date)
+    if (not params[:order_by]) and session[:order_by]
+      params[:order_by] = session[:order_by]
+      redirect = true
+    elsif params[:commit] != "Refresh" and session[:commit]
+      params[:commit] = session[:commit]
+      redirect = true
+    elsif (not params[:ratings]) and session[:ratings]
+      params[:ratings] = session[:ratings]
+      redirect = true
+    end
+
+
+
+    if redirect
+      flash.keep
+      redirect_to movies_path(params)
+
     else
-      @movies = Movie.all
+      session[:commit] = params[:commit]
+      session[:ratings] = params[:ratings]
+      session[:order_by] = params[:order_by]
+
+      @para = Hash.new
+      @para[:all_ratings] = %w[G PG PG-13 R]
+      @para[:selected_ratings] = []
+      @para[:order_by] = params[:order_by]
+
+      if params[:commit] == "Refresh"
+        @para[:all_ratings].each {|r| @para[:selected_ratings] << r if params[:ratings][r]}
+
+        if @para[:selected_ratings].empty?
+          @movies = Movie.all
+        else
+          @movies = Movie.ratings_include(@para[:selected_ratings])
+        end
+      else
+        @movies = Movie.all
+      end
+
+      if params[:order_by] == "title"
+        @movies = @movies.order(:title)
+      elsif params[:order_by] == "release_date"
+        @movies = @movies.order(:release_date)
+      end
     end
-
-    if params[:commit] == "Refresh"
-      @para[:all_ratings].each {|r| @para[:selected_ratings] << r if params[:ratings][r]}
-
-      @movies = Movie.ratings_include(@para[:selected_ratings]) unless @para[:selected_ratings].empty?
-    end
-
   end
 
   # def title_ordered
