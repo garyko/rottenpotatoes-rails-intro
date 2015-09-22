@@ -17,10 +17,14 @@ class MoviesController < ApplicationController
     if (not params[:order_by]) and session[:order_by]
       params[:order_by] = session[:order_by]
       redirect = true
-    elsif params[:commit] != "Refresh" and session[:commit]
+    end
+
+    if params[:commit] != "Refresh" and session[:commit]
       params[:commit] = session[:commit]
       redirect = true
-    elsif (not params[:ratings]) and session[:ratings]
+    end
+
+    if (not params[:ratings]) and session[:ratings]
       params[:ratings] = session[:ratings]
       redirect = true
     end
@@ -38,7 +42,7 @@ class MoviesController < ApplicationController
       session[:order_by] = params[:order_by]
 
       @para = Hash.new
-      @para[:all_ratings] = %w[G PG PG-13 R]
+      @para[:all_ratings] = %w[G PG PG-13 NC-17 R]
       @para[:selected_ratings] = []
       @para[:order_by] = params[:order_by]
 
