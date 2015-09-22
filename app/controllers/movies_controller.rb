@@ -41,14 +41,9 @@ class MoviesController < ApplicationController
       @para[:selected_ratings] = []
       @para[:order_by] = params[:order_by]
 
-      if params[:commit] == "Refresh"
-        @para[:all_ratings].each {|r| @para[:selected_ratings] << r if params[:ratings][r]}
-
-        if @para[:selected_ratings].empty?
-          @movies = Movie.all
-        else
+      if params[:commit] == "Refresh" and params[:ratings]
+          @para[:all_ratings].each {|r| @para[:selected_ratings] << r if params[:ratings][r]}
           @movies = Movie.ratings_include(@para[:selected_ratings])
-        end
       else
         @movies = Movie.all
       end
