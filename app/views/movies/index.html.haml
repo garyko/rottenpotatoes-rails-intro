@@ -11,10 +11,10 @@
 %table#movies
   %thead
     %tr
-      %th{ :class => ("hilite" if @para[:order_by] == "title")}
+      %th{ :class => @para["order_by_title"]}
         %a{ :id => "title_header", :href => "?order_by=title"} Movie Title
       %th Rating
-      %th{ :class => ("hilite" if @para[:order_by] == "release_date")}
+      %th{ :class => @para["order_by_release_date"]}
         %a{ :id => "release_date_header", :href => "?order_by=release_date"} Release Date
       %th More Info
   %tbody

@@ -44,20 +44,13 @@ class MoviesController < ApplicationController
       @para = Hash.new
       @para[:all_ratings] = %w[G PG PG-13 NC-17 R]
       @para[:selected_ratings] = []
-      @para[:order_by] = params[:order_by]
+      @para["order_by_#{params[:order_by]}"] = "hilite"
 
       if params[:commit] == "Refresh" and params[:ratings]
           @para[:all_ratings].each {|r| @para[:selected_ratings] << r if params[:ratings][r]}
-          @movies = Movie.ratings_include(@para[:selected_ratings])
-      else
-        @movies = Movie.all
       end
 
-      if params[:order_by] == "title"
-        @movies = @movies.order(:title)
-      elsif params[:order_by] == "release_date"
-        @movies = @movies.order(:release_date)
-      end
+      @movies = Movie.filter(@para[:selected_ratings]).order_by(params[:order_by])
     end
   end
 
